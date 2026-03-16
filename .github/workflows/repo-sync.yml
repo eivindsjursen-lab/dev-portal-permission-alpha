@@ -13,6 +13,8 @@ on:
     - cron: '0 */2 * * *' # https://crontab.guru/every-2-hours
 
 permissions:
+  actions: write
+  id-token: write
   contents: write
   pull-requests: write
 
