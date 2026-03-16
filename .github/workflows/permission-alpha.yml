@@ -1,0 +1,41 @@
+name: permission-alpha
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: "Base commit SHA"
+        required: true
+        type: string
+      head_sha:
+        description: "Head commit SHA"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  permission-diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run Permission Diff Gate
+        id: gate
+        uses: eivindsjursen-lab/permission-diff-gate@v0.1.0
+        env:
+          GITHUB_BASE_SHA: ${{ inputs.base_sha }}
+          GITHUB_SHA: ${{ inputs.head_sha }}
+        with:
+          mode: warn
+          policy_level: standard
+          config_paths: '[".github/workflows/repo-sync.yml"]'
+
+      - name: Print outputs
+        run: |
+          echo "RESULT=${{ steps.gate.outputs.result }}"
+          echo "CONFIDENCE=${{ steps.gate.outputs.confidence }}"
+          echo "REASON_CODES=${{ steps.gate.outputs.reason_codes }}"
+          echo "FINDINGS_COUNT=${{ steps.gate.outputs.findings_count }}"
